@@ -25,7 +25,7 @@ files = glob.glob(fasta_folder + '*.fasta*')
 out_path = args.out
 
 #usearch parameters
-db = args.indexed_db
+db = args.db
 usearch = args.usearch + '  -usearch_local'
 threads = args.threads
 
