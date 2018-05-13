@@ -1,21 +1,19 @@
 import glob
-import multiprocessing
 import subprocess
 import argparse
-import random
 
 '''NOTE: When in doubt, call "python [FILENAME.py] -h" to get a description of the necessary parameters'''
 
-def quantify_resistomes(f):
-    print 'Finding resistomes for file: {0}'.format(f.split('/')[-1])
+def identify_taxonomy(f, metaphlan2, threads, bowtie2, out_path):
+    print 'Finding taxonomic composition for file: {0}'.format(f.split('/')[-1])
     fastq_read_1 = f + '_quality_controlled_paired_1.fastq'
     fastq_read_2 = f + '_quality_controlled_paired_2.fastq'
     fastq_unpaired_1 = f + '_quality_controlled_unmatched_1.fastq'
     fastq_unpaired_2 = f + '_quality_controlled_unmatched_2.fastq'
+
+    out_file = out_path + f.split('/')[-1] + '_taxonomy.txt'
     
-    out_file = out_path + f.split('/')[-1] + '_shortbred.txt'
-    
-    command = '{0} --markers {1} --wgs {2} {3} {4} {5} --results {6} --id {7}  --threads 20 --usearch ../tools/usearch-v10.0.240 --tmp ./temp_files/quantification_{8}'.format(shortbred, markers, fastq_read_1, fastq_read_2, fastq_unpaired_1, fastq_unpaired_2, out_file, id, random.randint(1,1000))
+    command = '{0} {1},{2},{3},{4} --nproc {5} --input_type fastq --ignore_viruses --ignore_eukaryotes --bowtie2_exe {6} --no_map  -t rel_ab_w_read_stats -o {7}'.format(metaphlan2, fastq_read_1, fastq_read_2, fastq_unpaired_1, fastq_unpaired_2, threads, bowtie2, out_file)
     
     final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     (stdout, stderr) = final.communicate()
@@ -27,35 +25,27 @@ def main():
     parser = argparse.ArgumentParser(description='Specify arguments for ShortBRED quantification identification of ARGs.')
     parser.add_argument('--fastq_folder',
                         help='path to folder containing quality controlled fastq files')
-    parser.add_argument('--ref_markers',
-                        help='path to ARG markers')
     parser.add_argument('--out',
-                        help='folder for all ShortBRED output files')
-    parser.add_argument('--shortbred',
-                        help='path to shortbred software')
-    parser.add_argument('--id', default= 0.99,
-                        help='minimum identity for alignment')
+                        help='folder for all MetaPhlan2 output files')
+    parser.add_argument('--bowtie2',
+                        help='path to Bowtie2 software')
+    parser.add_argument('--metaphlan',
+                        help='path to MetaPhlan2 software')
     parser.add_argument('--threads', default= 1.0,
-                        help='number file sets to analyze')
+                        help='number threads to use for MetaPhlan2')
     args = parser.parse_args()
-
-    global shortbred, out_path, markers, shrotbred, id
 
     #Get all fastq file in folder (NOTE: fastq files should be QC'ed)
     fastq_folder = args.fastq_folder
     files = set([f.split('_quality_controlled_')[0] for f in glob.glob(fastq_folder + '*.fastq*')])
     out_path = args.out
 
-    #shortbred parameters
-    markers = args.ref_markers
-    shortbred = args.shortbred
-    id = args.id
-
-    #multiprocessing
+    #metaphlan parameters
+    bowtie2 = args.bowtie2
+    metaphlan2 = args.metaphlan
     threads = args.threads
-    p = multiprocessing.Pool(int(threads))
-    p.map(quantify_resistomes, files)
-    p.close()
-    p.join()
+
+    for file in files:
+        identify_taxonomy(file, metaphlan2, threads, bowtie2, out_path)
 
 main()
