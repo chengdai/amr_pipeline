@@ -22,7 +22,7 @@ def quality_control(file_prefix, human_ref, out_path, bowtie2, trimmomatic, thre
 
 def main():
     # Get arguments
-    parser = argparse.ArgumentParser(description='Specify arguments for ShortBRED quantification identification of ARGs.')
+    parser = argparse.ArgumentParser(description='Specify arguments for quality trimming and removal of human contamination.')
     parser.add_argument('--raw_fastq_folder',
                         help='path to folder containing raw fastq reads')
     parser.add_argument('--out',

@@ -22,7 +22,7 @@ def identify_taxonomy(f, metaphlan2, threads, bowtie2, out_path):
 
 def main():
     # Get arguments
-    parser = argparse.ArgumentParser(description='Specify arguments for ShortBRED quantification identification of ARGs.')
+    parser = argparse.ArgumentParser(description='Specify arguments for Metaphlan2 identification of taxonomy.')
     parser.add_argument('--fastq_folder',
                         help='path to folder containing quality controlled fastq files')
     parser.add_argument('--out',

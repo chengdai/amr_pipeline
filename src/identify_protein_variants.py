@@ -5,31 +5,7 @@ import argparse
 
 '''NOTE: When in doubt, call "python [FILENAME.py] -h" to get a description of the necessary parameters'''
 
-# Get arguments
-parser = argparse.ArgumentParser(description='Specify arguments for usearch local alignment of ARGs.')
-parser.add_argument('--fasta_folder',
-                    help='path to folder containing quality controlled fasta files')
-parser.add_argument('--db',
-                    help='path to basename of the db for the reference markers')
-parser.add_argument('--out',
-                    help='folder for all usearch output files')
-parser.add_argument('--usearch', default='usearch',
-                    help='path to usearch software')
-parser.add_argument('--threads', default= 1.0,
-                    help='number threads to use for alignment')
-args = parser.parse_args()
-
-#Get all fasta file in folder (NOTE: fasta files should be QC'ed)
-fasta_folder = args.fasta_folder
-files = glob.glob(fasta_folder + '*.fasta*')
-out_path = args.out
-
-#usearch parameters
-db = args.db
-usearch = args.usearch + '  -usearch_local'
-threads = args.threads
-
-for f in files:
+def identify_protein_variants(f, usearch, db, threads, out_path):
     print 'Finding variants for file: {0}'.format(f.split('/')[-1])
 
     report_out_file = out_path + f.split('/')[-1].split('.')[0] + '_protein_snp.txt'
@@ -41,3 +17,32 @@ for f in files:
     print stdout
     print stderr
 
+def main():
+    # Get arguments
+    parser = argparse.ArgumentParser(description='Specify arguments for usearch local alignment of ARGs.')
+    parser.add_argument('--fasta_folder',
+                        help='path to folder containing quality controlled fasta files')
+    parser.add_argument('--db',
+                        help='path to basename of the db for the reference markers')
+    parser.add_argument('--out',
+                        help='folder for all usearch output files')
+    parser.add_argument('--usearch', default='usearch',
+                        help='path to usearch software')
+    parser.add_argument('--threads', default= 1.0,
+                        help='number threads to use for alignment')
+    args = parser.parse_args()
+
+    #Get all fasta file in folder (NOTE: fasta files should be QC'ed)
+    fasta_folder = args.fasta_folder
+    files = glob.glob(fasta_folder + '*.fasta*')
+    out_path = args.out
+
+    #usearch parameters
+    db = args.db
+    usearch = args.usearch + '  -usearch_local'
+    threads = args.threads
+
+    for f in files:
+        identify_protein_variants(f, usearch, db, threads, out_path)
+
+main()
