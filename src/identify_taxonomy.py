@@ -45,7 +45,7 @@ def main():
     metaphlan2 = args.metaphlan
     threads = args.threads
 
-    for file in files:
-        identify_taxonomy(file, metaphlan2, threads, bowtie2, out_path)
+    for file_prefix in files:
+        identify_taxonomy(file_prefix, metaphlan2, threads, bowtie2, out_path)
 
 main()
