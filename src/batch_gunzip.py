@@ -8,6 +8,7 @@ def gunzip(file_name):
 	For multi-processing gunzipping of .gz files without installation of GNU parallel. 
 	If you have GNU parallel installed, please use: parallel --jobs <int cores> gunzip {} ::: *.fastq.gz
     '''
+    print 'gunzipping: {0}'.format(file_name)
     command = 'gunzip {0}'.format(file_name)
     
     final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
@@ -26,6 +27,6 @@ def main():
     wildcard = args.wildcard_command
     gzipped_files = glob.glob(folder + wildcard)
     pool = Pool()
-    pool.map(gunzip, gzipped_files)
+    pool.map_async(gunzip, gzipped_files)
     
 main()

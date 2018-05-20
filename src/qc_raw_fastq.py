@@ -13,11 +13,11 @@ def quality_control(file_prefix, human_ref, out_path, bowtie2, trimmomatic, thre
     trimmomatic_options = '\"ILLUMINACLIP:' + '/'.join(trimmomatic.split('/')[:-1]) + 'adapters/NexteraPE-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:50\"'
 
     command = 'kneaddata --input {0} --input {1} -db {2} --bowtie2 {3} --trimmomatic {4} --trimmomatic-options {5} --threads {6} --output {7} --output-prefix {8} && rm {7}*contam* && rm {7}*trimmed* && mv {7}*log {7}log_files/'.format(fastq_read_1, fastq_read_2, human_ref, bowtie2, trimmomatic, trimmomatic_options, threads, out_path, out_prefix)
-    print command
-    #final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-    #(stdout, stderr) = final.communicate()
-    #print stdout
-    #print stderr
+
+    final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+    (stdout, stderr) = final.communicate()
+    print stdout
+    print stderr
 
 
 def main():
