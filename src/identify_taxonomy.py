@@ -6,10 +6,10 @@ import argparse
 
 def identify_taxonomy(f, metaphlan2, threads, bowtie2, out_path):
     print 'Finding taxonomic composition for file: {0}'.format(f.split('/')[-1])
-    fastq_read_1 = f + '_quality_controlled_paired_1.fastq'
-    fastq_read_2 = f + '_quality_controlled_paired_2.fastq'
-    fastq_unpaired_1 = f + '_quality_controlled_unmatched_1.fastq'
-    fastq_unpaired_2 = f + '_quality_controlled_unmatched_2.fastq'
+    fastq_read_1 = f + '_quality_controlled_paired_1.fastq.gz'
+    fastq_read_2 = f + '_quality_controlled_paired_2.fastq.gz'
+    fastq_unpaired_1 = f + '_quality_controlled_unmatched_1.fastq.gz'
+    fastq_unpaired_2 = f + '_quality_controlled_unmatched_2.fastq.gz'
 
     out_file = out_path + f.split('/')[-1] + '_taxonomy.txt'
     

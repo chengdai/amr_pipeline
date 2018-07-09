@@ -15,7 +15,7 @@ def quantify_read_resistomes(f):
     
     out_file = out_path + f.split('/')[-1] + '_shortbred.txt'
     
-    command = '{0} --markers {1} --wgs {2} {3} {4} {5} --results {6} --id {7}  --threads 20 --usearch ../tools/usearch-v10.0.240 --tmp {8}quantification_{9}'.format(shortbred, markers, fasta_read_1, fasta_read_2, fasta_unpaired_1, fasta_unpaired_2, out_file, id, temp, random.randint(1,1000))
+    command = '{0} --markers {1} --wgs {2} {3} {4} {5} --results {6} --id {7}  --threads 20 --usearch ../tools/usearch-v10.0.240 --tmp {8}quantification_{9}'.format(shortbred, markers, fasta_read_1, fasta_read_2, fasta_unpaired_1, fasta_unpaired_2, out_file, id, temp, random.randint(1,100000))
     
     final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     (stdout, stderr) = final.communicate()

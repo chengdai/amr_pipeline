@@ -1,4 +1,5 @@
 from multiprocessing import Pool
+import multiprocessing
 import glob
 import subprocess
 import argparse
@@ -13,7 +14,7 @@ def gunzip(file_name):
     
     final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     (stdout, stderr) = final.communicate()
-    print stdout
+    print stdout, stderr
     return None
 
 def main():
@@ -26,7 +27,8 @@ def main():
     folder = args.gz_folder
     wildcard = args.wildcard_command
     gzipped_files = glob.glob(folder + wildcard)
-    pool = Pool()
-    pool.map_async(gunzip, gzipped_files)
+    print '{0} files to gunzip'.format(len(gzipped_files))
+    pool = Pool(multiprocessing.cpu_count())
+    pool.map(gunzip, gzipped_files)
     
 main()

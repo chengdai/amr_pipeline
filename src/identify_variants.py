@@ -14,12 +14,12 @@ def force_mkdir(dir, force):
         print '{0} currently exists, ignoring'
 
 def align_to_homolog_genes(f, diamond, dmnd, threads, temp_folder):
-    print 'Aligning to homolog genes for file: {0} [{1}]'.format(f.split('/')[-1], datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
+    print '\nAligning to homolog genes for file: {0} [{1}]'.format(f.split('/')[-1], datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
 
     report_out_file = temp_folder + f.split('/')[-1].split('.')[0] + '_homolog_matches.txt'
     header_out_file = temp_folder + f.split('/')[-1].split('.')[0] + '_homolog_matches_header.txt'
 
-    command = "{0} -q {1} -d {2} -f 6 -o {3} -k 1 --id 70 --query-cover 70 -p {4} && awk '{{print $1}}' {3} > {5}".format(diamond, f, dmnd, report_out_file, threads, header_out_file)
+    command = "{0} -q {1} -d {2} -f 6 -o {3} -k 1 --id 90 --query-cover 80 -p {4} && awk '{{print $1}}' {3} > {5}".format(diamond, f, dmnd, report_out_file, threads, header_out_file)
 
     final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     (stdout, stderr) = final.communicate()
@@ -29,7 +29,7 @@ def align_to_homolog_genes(f, diamond, dmnd, threads, temp_folder):
     return header_out_file
 
 def extract_reads(f, header_file, temp_folder, subset):
-    print 'Extracting aligned reads from file {0} using {1}  [{2}]'.format(f.split('/')[-1], header_file.split('/')[-1], datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
+    print '\nExtracting aligned reads from file {0} using {1}  [{2}]'.format(f.split('/')[-1], header_file.split('/')[-1], datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
 
     subset_fasta_file = temp_folder + f.split('/')[-1].split('.')[0] + '_homolog_subset.fa'
 
@@ -43,11 +43,11 @@ def extract_reads(f, header_file, temp_folder, subset):
     return subset_fasta_file
 
 def identify_variants(f, usearch, udb, threads, out_path):
-    print 'Finding variants for file: {0} [{1}]'.format(f.split('/')[-1], datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
+    print '\nFinding variants for file: {0} [{1}]'.format(f.split('/')[-1], datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
 
     report_out_file = out_path + f.split('/')[-1].split('_homolog_subset.fa')[0] + '_variants.txt'
 
-    command = "{0} {1} -db {2} -target_cov 0.51 -maxgaps 0 -id 1.0 -maxhits 1 -threads {3} -userout {4} -userfields query+target+id+evalue+qcov+tcov+ql+tl+bits".format(usearch, f, udb, threads, report_out_file)
+    command = "{0} {1} -db {2} -target_cov 1.0 -maxgaps 0 -id 1.0 -maxaccepts 0 -maxrejects 0 -maxhits 1 -threads {3} -userout {4} -userfields query+target+id+evalue+qcov+tcov+ql+tl+bits".format(usearch, f, udb, threads, report_out_file)
 
     final = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     (stdout, stderr) = final.communicate()
@@ -82,8 +82,8 @@ def main():
     #Get all fasta file in folder (NOTE: fasta files should be QC'ed)
     fasta_folder = args.fasta_folder
     files = glob.glob(fasta_folder + '*.fasta*')
-    out_path = os.path.normpath(os.path.expanduser(args.out))
-    temp_folder = os.path.normpath(os.path.expanduser(args.temp))
+    out_path = os.path.normpath(os.path.expanduser(args.out)) + '/'
+    temp_folder = os.path.normpath(os.path.expanduser(args.temp)) + '/'
 
     diamond = args.diamond + ' blastx'
     dmnd = args.dmnd
@@ -93,16 +93,16 @@ def main():
     threads = args.threads
     force = args.force
 
-    print 'Creating temporary directory [{0}]\n'.format(datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
+    print '\nCreating temporary directory [{0}]'.format(datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
     force_mkdir(temp_folder, force)
 
-    print 'Creating output directory [{0}]\n'.format(datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
+    print '\nCreating output directory [{0}]'.format(datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S"))
     force_mkdir(out_path, force)
 
-    #for f in files:
-    #    header_out_file = align_to_homolog_genes(f, diamond, dmnd, threads, temp_folder)
-    #    subset_fasta_file = extract_reads(f, header_out_file, temp_folder, subset)
-    #    identify_variants(subset_fasta_file, usearch, udb, threads, out_path)
+    for f in files:
+       header_out_file = align_to_homolog_genes(f, diamond, dmnd, threads, temp_folder)
+       subset_fasta_file = extract_reads(f, header_out_file, temp_folder, subset)
+       identify_variants(subset_fasta_file, usearch, udb, threads, out_path)
 
 main()
 

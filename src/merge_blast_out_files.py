@@ -8,7 +8,7 @@ import random
 
 def concat(f):
     print 'Finding blast outputs for file with prefix: {0}'.format(f.split('/')[-1])
-    blast_1, blast_2, blast_3, blast_4 = glob.glob(f + '*')
+    blast_1, blast_2, blast_3, blast_4 = glob.glob(f + '*' + suffix)
     out_file = out_path + f.split('/')[-1] + suffix
     
     command = 'cat {0} {1} {2} {3} > {4}'.format(blast_1, blast_2, blast_3, blast_4, out_file)
